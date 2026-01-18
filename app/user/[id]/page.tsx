@@ -177,7 +177,7 @@ function KundaliSection({
             </button>
           </div>
 
-           <div>
+          <div>
             <p className="text-gray-500 text-sm">Lagna Sign</p>
             <p className="inline-block mt-1 rounded-md bg-indigo-50 px-3 py-1 text-sm font-semibold text-indigo-700">
               {kundali.lagnaSign}
@@ -249,7 +249,7 @@ export default function UserDetail() {
     <main className="min-h-screen bg-gray-50 py-10 px-4">
       <div className="mx-auto max-w-3xl space-y-8">
         {/* Header */}
-        <div className="flex items-start justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
               {user.name}
@@ -259,88 +259,28 @@ export default function UserDetail() {
             </p>
           </div>
 
-          <button
-            onClick={copyAllDetails}
-            className="inline-flex items-center gap-2 text-sm text-indigo-600 hover:underline"
-          >
-            <FiCopy />
-            Copy All
-          </button>
-        </div>
+          <div className="flex items-center gap-3">
+           
 
-        {/* Personal Information */}
-        {/* <div className="rounded-xl border bg-white p-6 shadow-sm">
-          <div className="flex justify-between mb-4">
-            <h2 className="text-sm font-semibold uppercase">
-              Personal Information
-            </h2>
             <button
-              onClick={() =>
-                copyText(
-                  [
-                    "Personal Information:",
-                    "",
-                    `Name: ${user.name}`,
-                    `Mobile: ${user.mobile}`,
-                    `Date of Birth: ${user.dob}`,
-                    `Time of Birth: ${user.tob || "-"}`,
-                    `Place of Birth: ${user.pob}`,
-                    `Reference: ${user.reference || "-"}`,
-                  ].join("\n")
-                )
-              }
-              className="inline-flex items-center gap-1 text-xs text-indigo-600 hover:underline"
+              onClick={copyAllDetails}
+              className="inline-flex items-center gap-2 text-sm text-indigo-600 hover:underline"
             >
               <FiCopy />
-              Copy
+              {/* Copy All */}
             </button>
+             <Link
+              href={`/user/${user.id}/edit`}
+              className="inline-flex items-center gap-2 
+              rounded-lg border 
+              border-indigo-600 px-4 py-2 text-sm font-medium text-indigo-600 hover:bg-indigo-50"
+            >
+              <FiEdit />
+              {/* Edit Client */}
+            </Link>
           </div>
-          <PersonalInformationSection user={user} />
+        </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-            <div className="flex gap-2">
-              <FiPhone className="text-gray-400" />
-              <div>
-                <p className="text-gray-500">Contact Number</p>
-                <p className="font-medium">{user.mobile}</p>
-              </div>
-            </div>
-
-            <div className="flex gap-2">
-              <FiCalendar className="text-gray-400" />
-              <div>
-                <p className="text-gray-500">Date of Birth</p>
-                <p className="font-medium">{user.dob}</p>
-              </div>
-            </div>
-
-            <div className="flex gap-2">
-              <FiClock className="text-gray-400" />
-              <div>
-                <p className="text-gray-500">Time of Birth</p>
-                <p className="font-medium">{user.tob || "-"}</p>
-              </div>
-            </div>
-
-            <div className="flex gap-2">
-              <FiMapPin className="text-gray-400" />
-              <div>
-                <p className="text-gray-500">Place of Birth</p>
-                <p className="font-medium">{user.pob}</p>
-              </div>
-            </div>
-
-            <div className="flex gap-2">
-              <FiUsers className="text-gray-400" />
-              <div>
-                <p className="text-gray-500">Reference</p>
-                <p className="inline-block mt-0.5 rounded-md bg-indigo-50 px-3 py-1 text-sm font-medium text-indigo-700">
-                  {user.reference || "-"}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div> */}
         <PersonalInformationSection user={user} />
         {user.kundali && <KundaliSection kundali={user.kundali} />}
         <PrivateInformationSection bio={user.bio} notes={user.notes} />
@@ -364,14 +304,6 @@ export default function UserDetail() {
           </Link>
 
           <Link
-            href={`/user/${user.id}/edit`}
-            className="inline-flex items-center gap-2 rounded-lg border border-indigo-600 px-5 py-2.5 text-sm font-medium text-indigo-600 hover:bg-indigo-50"
-          >
-            <FiEdit />
-            Edit Client
-          </Link>
-
-          <Link
             href={`/user/${user.id}/kundali`}
             className="inline-flex items-center gap-2 rounded-lg border border-purple-600 px-5 py-2.5 text-sm font-medium text-purple-600 hover:bg-purple-50"
           >
@@ -386,76 +318,76 @@ export default function UserDetail() {
 
 function PersonalInformationSection({ user }: { user: any }) {
   return (
-     <div className="rounded-xl border bg-white p-6 shadow-sm">
-          <div className="flex justify-between mb-4">
-            <h2 className="text-sm font-semibold uppercase">
-              Personal Information
-            </h2>
-            <button
-              onClick={() =>
-                copyText(
-                  [
-                    "Personal Information:",
-                    "",
-                    `Name: ${user.name}`,
-                    `Mobile: ${user.mobile}`,
-                    `Date of Birth: ${user.dob}`,
-                    `Time of Birth: ${user.tob || "-"}`,
-                    `Place of Birth: ${user.pob}`,
-                    `Reference: ${user.reference || "-"}`,
-                  ].join("\n")
-                )
-              }
-              className="inline-flex items-center gap-1 text-xs text-indigo-600 hover:underline"
-            >
-              <FiCopy />
-              Copy
-            </button>
-          </div>
+    <div className="rounded-xl border bg-white p-6 shadow-sm">
+      <div className="flex justify-between mb-4">
+        <h2 className="text-sm font-semibold uppercase">
+          Personal Information
+        </h2>
+        <button
+          onClick={() =>
+            copyText(
+              [
+                "Personal Information:",
+                "",
+                `Name: ${user.name}`,
+                `Mobile: ${user.mobile}`,
+                `Date of Birth: ${user.dob}`,
+                `Time of Birth: ${user.tob || "-"}`,
+                `Place of Birth: ${user.pob}`,
+                `Reference: ${user.reference || "-"}`,
+              ].join("\n")
+            )
+          }
+          className="inline-flex items-center gap-1 text-xs text-indigo-600 hover:underline"
+        >
+          <FiCopy />
+          Copy
+        </button>
+      </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-            <div className="flex gap-2">
-              <FiPhone className="text-gray-400" />
-              <div>
-                <p className="text-gray-500">Contact Number</p>
-                <p className="font-medium">{user.mobile}</p>
-              </div>
-            </div>
-
-            <div className="flex gap-2">
-              <FiCalendar className="text-gray-400" />
-              <div>
-                <p className="text-gray-500">Date of Birth</p>
-                <p className="font-medium">{user.dob}</p>
-              </div>
-            </div>
-
-            <div className="flex gap-2">
-              <FiClock className="text-gray-400" />
-              <div>
-                <p className="text-gray-500">Time of Birth</p>
-                <p className="font-medium">{user.tob || "-"}</p>
-              </div>
-            </div>
-
-            <div className="flex gap-2">
-              <FiMapPin className="text-gray-400" />
-              <div>
-                <p className="text-gray-500">Place of Birth</p>
-                <p className="font-medium">{user.pob}</p>
-              </div>
-            </div>
-
-            <div className="flex gap-2">
-              <FiUsers className="text-gray-400" />
-              <div>
-                <p className="text-gray-500">Reference</p>
-                <p className="inline-block mt-0.5 rounded-md bg-indigo-50 px-3 py-1 text-sm font-medium text-indigo-700">
-                  {user.reference || "-"}
-                </p>
-              </div>
-            </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+        <div className="flex gap-2">
+          <FiPhone className="text-gray-400" />
+          <div>
+            <p className="text-gray-500">Contact Number</p>
+            <p className="font-medium">{user.mobile}</p>
           </div>
         </div>
+
+        <div className="flex gap-2">
+          <FiCalendar className="text-gray-400" />
+          <div>
+            <p className="text-gray-500">Date of Birth</p>
+            <p className="font-medium">{user.dob}</p>
+          </div>
+        </div>
+
+        <div className="flex gap-2">
+          <FiClock className="text-gray-400" />
+          <div>
+            <p className="text-gray-500">Time of Birth</p>
+            <p className="font-medium">{user.tob || "-"}</p>
+          </div>
+        </div>
+
+        <div className="flex gap-2">
+          <FiMapPin className="text-gray-400" />
+          <div>
+            <p className="text-gray-500">Place of Birth</p>
+            <p className="font-medium">{user.pob}</p>
+          </div>
+        </div>
+
+        <div className="flex gap-2">
+          <FiUsers className="text-gray-400" />
+          <div>
+            <p className="text-gray-500">Reference</p>
+            <p className="inline-block mt-0.5 rounded-md bg-indigo-50 px-3 py-1 text-sm font-medium text-indigo-700">
+              {user.reference || "-"}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
