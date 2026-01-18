@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 import { getReadingById } from "@/lib/readingStorage";
 import { getUserById } from "@/lib/storage";
-import jsPDF from "jspdf";
+import { generateReadingPDF } from "@/lib/pdf/generateReadingPDF";
 
 export default function ReadingDetail() {
   const { id } = useParams();
@@ -19,85 +19,6 @@ export default function ReadingDetail() {
 
   const user = getUserById(reading.userId);
 
-  const downloadPDF = () => {
-    const doc = new jsPDF();
-    let y = 20;
-
-    /* ---------- header ---------- */
-
-    doc.setFontSize(16);
-    doc.text("Manav Vedic Astro Reading", 105, y, { align: "center" });
-    y += 12;
-
-    doc.setFontSize(11);
-
-    /* ---------- user details ---------- */
-
-    if (user) {
-      doc.text(`Name: ${user.name}`, 14, y); y += 6;
-      doc.text(`DOB: ${user.dob}`, 14, y); y += 6;
-      doc.text(`Place of Birth: ${user.pob}`, 14, y); y += 6;
-    }
-
-    doc.text(`Reading Date: ${reading.readingDate}`, 14, y); y += 6;
-    doc.text(`Reading Time: ${reading.readingTime}`, 14, y); y += 10;
-
-    /* ---------- questions ---------- */
-
-    doc.setFontSize(12);
-    doc.text("Questions:", 14, y);
-    y += 6;
-
-    doc.setFontSize(11);
-    reading.questions.forEach((q, i) => {
-      const lines = doc.splitTextToSize(`${i + 1}. ${q}`, 180);
-      doc.text(lines, 14, y);
-      y += lines.length * 6;
-    });
-
-    y += 6;
-
-    /* ---------- prediction ---------- */
-
-    doc.setFontSize(12);
-    doc.text("Prediction:", 14, y);
-    y += 6;
-
-    doc.setFontSize(11);
-    const predictionLines = doc.splitTextToSize(reading.prediction, 180);
-    doc.text(predictionLines, 14, y);
-    y += predictionLines.length * 6 + 8;
-
-    /* =====================================================
-       EXPERIMENTAL: KUNDALI SECTION
-       You can comment this block anytime if needed
-       ===================================================== */
-
-    if (user?.kundali) {
-      doc.setFontSize(12);
-      doc.text("Kundali (Experimental)", 14, y);
-      y += 6;
-
-      doc.setFontSize(11);
-      doc.text(`Lagna Sign: ${user.kundali.lagnaSign}`, 14, y);
-      y += 6;
-
-      Object.entries(user.kundali.houses).forEach(([_, value], index) => {
-        const line = `${index + 1} House: ${value || ""}`;
-        const lines = doc.splitTextToSize(line, 180);
-
-        doc.text(lines, 14, y);
-        y += lines.length * 6;
-      });
-
-      y += 6;
-    }
-
-    /* ---------- save ---------- */
-
-    doc.save(`Astro_Reading_${reading.readingDate}.pdf`);
-  };
-
   return (
     <main className="min-h-screen bg-gray-50 py-10 px-4">
       <div className="mx-auto max-w-3xl space-y-8">
@@ -111,24 +32,24 @@ export default function ReadingDetail() {
           </p>
         </div>
 
-        {/* User Summary */}
+        {/* Client Summary */}
         {user && (
           <div className="rounded-xl border bg-white p-5 shadow-sm">
-            <p className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">
+            <p className="text-sm font-semibold uppercase mb-3">
               Client Details
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
               <div>
                 <p className="text-gray-500">Name</p>
-                <p className="font-medium text-gray-900">{user.name}</p>
+                <p className="font-medium">{user.name}</p>
               </div>
               <div>
-                <p className="text-gray-500">Date of Birth</p>
-                <p className="font-medium text-gray-900">{user.dob}</p>
+                <p className="text-gray-500">DOB</p>
+                <p className="font-medium">{user.dob}</p>
               </div>
               <div>
                 <p className="text-gray-500">Place of Birth</p>
-                <p className="font-medium text-gray-900">{user.pob}</p>
+                <p className="font-medium">{user.pob}</p>
               </div>
             </div>
           </div>
@@ -136,37 +57,33 @@ export default function ReadingDetail() {
 
         {/* Questions */}
         <section className="rounded-xl border bg-white p-6 shadow-sm">
-          <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">
+          <h2 className="text-sm font-semibold uppercase mb-4">
             Questions
           </h2>
-          <ol className="space-y-3 list-decimal list-inside text-sm text-gray-800">
+          <ol className="list-decimal list-inside space-y-2 text-sm">
             {reading.questions.map((q, i) => (
-              <li key={i} className="leading-relaxed">
-                {q}
-              </li>
+              <li key={i}>{q}</li>
             ))}
           </ol>
         </section>
 
         {/* Prediction */}
         <section className="rounded-xl border bg-white p-6 shadow-sm">
-          <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">
+          <h2 className="text-sm font-semibold uppercase mb-4">
             Prediction
           </h2>
-          <p className="whitespace-pre-wrap text-sm leading-relaxed text-gray-800">
+          <p className="whitespace-pre-wrap text-sm">
             {reading.prediction}
           </p>
         </section>
 
         {/* Action */}
-        <div className="pt-2">
-          <button
-            onClick={downloadPDF}
-            className="w-full rounded-lg bg-indigo-600 px-4 py-3 text-sm font-medium text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-          >
-            Download PDF
-          </button>
-        </div>
+        <button
+          onClick={() => generateReadingPDF(reading, user || undefined)}
+          className="w-full rounded-lg bg-indigo-600 px-4 py-3 text-sm font-medium text-white hover:bg-indigo-500"
+        >
+          Download PDF
+        </button>
       </div>
     </main>
   );

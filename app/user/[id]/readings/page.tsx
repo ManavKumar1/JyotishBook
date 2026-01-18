@@ -3,6 +3,7 @@
 import { useParams } from "next/navigation";
 import { getReadingsByUser } from "@/lib/readingStorage";
 import Link from "next/link";
+import { FiPlusCircle } from "react-icons/fi";
 
 export default function UserReadings() {
   const { id } = useParams();
@@ -13,13 +14,23 @@ export default function UserReadings() {
       <div className="mx-auto max-w-3xl space-y-8">
 
         {/* Header */}
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">
-            Past Readings
-          </h1>
-          <p className="mt-1 text-sm text-gray-500">
-            View all recorded astrological readings
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Past Readings
+            </h1>
+            <p className="mt-1 text-sm text-gray-500">
+              View all recorded astrological readings
+            </p>
+          </div>
+
+          <Link
+            href={`/user/${id}/new-reading`}
+            className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-indigo-700"
+          >
+            <FiPlusCircle className="h-5 w-5" />
+            New Reading
+          </Link>
         </div>
 
         {/* Empty State */}
@@ -58,6 +69,7 @@ export default function UserReadings() {
             </li>
           ))}
         </ul>
+
       </div>
     </main>
   );
