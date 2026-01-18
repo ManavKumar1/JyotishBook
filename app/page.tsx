@@ -1,65 +1,122 @@
-import Image from "next/image";
+"use client";
+
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { getUsers, deleteUser } from "@/lib/storage";
+import { User } from "@/types/user";
+import UserSearchBar from "@/components/UserSearchBar";
+import { FiTrash2 } from "react-icons/fi";
 
 export default function Home() {
+  const [users, setUsers] = useState<User[]>([]);
+  const [query, setQuery] = useState("");
+
+  useEffect(() => {
+    setUsers(getUsers());
+  }, []);
+
+  /* ---------- filtered users ---------- */
+
+  const filteredUsers = users.filter((u) => {
+    const q = query.toLowerCase();
+
+    return (
+      u.name.toLowerCase().includes(q) ||
+      String(u.mobile).includes(q) ||
+      u.dob.includes(q)
+    );
+  });
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <main className="min-h-screen bg-gray-50 py-10 px-4">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Clients
+            </h1>
+            <p className="text-sm text-gray-500 mt-1">
+              Manage and view client records
+            </p>
+          </div>
+
+          <Link
+            href="/add-user"
+            className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            + Add Client
+          </Link>
         </div>
-      </main>
-    </div>
+
+        {/* Search */}
+        <UserSearchBar value={query} onChange={setQuery} />
+
+        {/* Empty States */}
+        {users.length === 0 && (
+          <div className="rounded-lg border border-dashed border-gray-300 bg-white p-8 text-center text-gray-500">
+            No clients yet. Click “Add Client” to create one.
+          </div>
+        )}
+
+        {users.length > 0 && filteredUsers.length === 0 && (
+          <div className="rounded-lg border border-dashed border-gray-300 bg-white p-8 text-center text-gray-500">
+            No matching clients found.
+          </div>
+        )}
+
+        {/* User List */}
+        <ul className="space-y-4">
+          {filteredUsers.map((user) => (
+            <li
+              key={user.id}
+              className="group rounded-xl border bg-white p-5 shadow-sm transition hover:shadow-md"
+            >
+              <div className="flex items-start justify-between">
+                {/* Clickable Area */}
+                <Link
+                  href={`/user/${user.id}`}
+                  className="block flex-1 focus:outline-none"
+                >
+                  <h2 className="text-lg font-semibold text-gray-900 group-hover:text-indigo-600">
+                    {user.name}
+                  </h2>
+
+                  <p className="mt-1 text-sm text-gray-500">
+                    <span className="font-medium text-gray-600">
+                      DOB:
+                    </span>{" "}
+                    {user.dob}
+                    <span className="mx-2 text-gray-300">•</span>
+                    <span className="font-medium text-gray-600">
+                      POB:
+                    </span>{" "}
+                    {user.pob}
+                  </p>
+                </Link>
+
+                {/* Delete (icon) */}
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    if (confirm("Delete this user and all readings?")) {
+                      deleteUser(user.id);
+                      setUsers(getUsers());
+                    }
+                  }}
+                  className="ml-4 rounded-md p-2 text-red-600 hover:bg-red-50 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                  title="Delete client"
+                  aria-label="Delete client"
+                >
+                  <FiTrash2 className="h-5 w-5" />
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </main>
   );
 }
